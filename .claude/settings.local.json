@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mkdir -p /Users/biraz/Documents/Work/Android/Projects/pdf_utility_app/app/src/main/java/com/offlinepdf/toolkit/core/domain/model)",
+      "Bash(mkdir -p /Users/biraz/Documents/Work/Android/Projects/pdf_utility_app/app/src/main/java/com/offlinepdf/toolkit/core/domain/error)",
+      "Bash(mkdir -p /Users/biraz/Documents/Work/Android/Projects/pdf_utility_app/app/src/main/java/com/offlinepdf/toolkit/core/domain/repository)",
+      "Bash(mkdir -p /Users/biraz/Documents/Work/Android/Projects/pdf_utility_app/app/src/main/java/com/offlinepdf/toolkit/core/domain/usecase/base)",
+      "Bash(mkdir -p /Users/biraz/Documents/Work/Android/Projects/pdf_utility_app/app/src/main/java/com/offlinepdf/toolkit/core/domain/usecase/pdf)"
+    ]
+  }
+}
