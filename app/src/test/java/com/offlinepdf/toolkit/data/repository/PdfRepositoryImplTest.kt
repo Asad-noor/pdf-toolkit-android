@@ -77,7 +77,7 @@ class PdfRepositoryImplTest {
             Result.success(ByteArrayInputStream(fakeBytes))
         val baos = ByteArrayOutputStream()
         coEvery { fileRepository.openOutputStream(outputUri) } returns Result.success(baos)
-        every { processor.compress(fakeBytes, CompressionLevel.MEDIUM, baos, any()) } returns Unit
+        every { processor.compress(fakeBytes, CompressionLevel.MEDIUM, "baos", any(), onProgress = any()) } returns Unit
 
         val progress = repository.compressPdf(inputUri, outputUri, CompressionLevel.MEDIUM).toList()
 

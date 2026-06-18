@@ -3,6 +3,7 @@ package com.example.pdf_utility_app.ui.main
 import androidx.activity.ComponentActivity
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.navigation3.runtime.NavKey
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -14,7 +15,7 @@ class MainScreenTest {
 
   @Before
   fun setup() {
-    composeTestRule.setContent { MainScreen(FAKE_DATA) }
+    composeTestRule.setContent { MainScreen(FAKE_DATA as (NavKey) -> Unit) }
   }
 
   @Test
