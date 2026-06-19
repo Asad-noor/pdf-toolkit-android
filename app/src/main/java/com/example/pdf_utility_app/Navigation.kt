@@ -15,7 +15,6 @@ import com.example.pdf_utility_app.ui.merge.MergePdfsScreen
 import com.example.pdf_utility_app.ui.password.PasswordProtectScreen
 import com.example.pdf_utility_app.ui.reorder.ReorderPagesScreen
 import com.example.pdf_utility_app.ui.rotate.RotatePagesScreen
-import com.example.pdf_utility_app.ui.split.SplitPdfScreen
 import com.example.pdf_utility_app.ui.edit.EditPdfScreen
 import com.example.pdf_utility_app.ui.text.ExtractTextScreen
 import com.example.pdf_utility_app.ui.unlock.UnlockPdfScreen
@@ -35,9 +34,6 @@ fun MainNavigation() {
             }
             entry<MergePdfs> {
                 MergePdfsScreen(onBack = { backStack.removeLastOrNull() }, modifier = baseModifier)
-            }
-            entry<SplitPdf> {
-                SplitPdfScreen(onBack = { backStack.removeLastOrNull() }, modifier = baseModifier)
             }
             entry<ExtractPages> {
                 ExtractPagesScreen(onBack = { backStack.removeLastOrNull() }, modifier = baseModifier)

@@ -31,7 +31,6 @@ import com.example.pdf_utility_app.MergePdfs
 import com.example.pdf_utility_app.PasswordProtect
 import com.example.pdf_utility_app.ReorderPages
 import com.example.pdf_utility_app.RotatePages
-import com.example.pdf_utility_app.SplitPdf
 import com.example.pdf_utility_app.EditPdf
 import com.example.pdf_utility_app.UnlockPdf
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,8 +45,8 @@ private data class Operation(
 )
 
 private val operations = listOf(
+    Operation("Edit PDF", "Redact & replace text", "✏️", EditPdf),
     Operation("Merge PDFs", "Combine multiple PDFs", "📚", MergePdfs),
-    Operation("Split PDF", "Divide into parts", "✂️", SplitPdf),
     Operation("Extract Pages", "Pull out pages", "📑", ExtractPages),
     Operation("Delete Pages", "Remove pages", "🗑️", DeletePages),
     Operation("Reorder Pages", "Rearrange order", "🔄", ReorderPages),
@@ -58,7 +57,6 @@ private val operations = listOf(
     Operation("Unlock PDF", "Remove password", "🔓", UnlockPdf),
     Operation("Extract Text", "Get plain text", "📝", ExtractText),
     Operation("Images to PDF", "Convert images", "🖼️", ImagesToPdf),
-    Operation("Edit PDF", "Redact & replace text", "✏️", EditPdf),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

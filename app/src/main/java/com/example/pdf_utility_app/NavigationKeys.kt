@@ -5,7 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable data object Main : NavKey
 @Serializable data object MergePdfs : NavKey
-@Serializable data object SplitPdf : NavKey
 @Serializable data object ExtractPages : NavKey
 @Serializable data object DeletePages : NavKey
 @Serializable data object ReorderPages : NavKey
