@@ -2,6 +2,7 @@ package com.offlinepdf.toolkit.core.data.processor
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.RectF
 import com.itextpdf.io.font.constants.StandardFonts
 import com.itextpdf.io.image.ImageDataFactory
 import com.itextpdf.kernel.colors.DeviceRgb
@@ -9,6 +10,7 @@ import com.itextpdf.kernel.exceptions.BadPasswordException
 import com.itextpdf.kernel.font.PdfFontFactory
 import com.itextpdf.kernel.geom.AffineTransform
 import com.itextpdf.kernel.geom.Rectangle
+import com.itextpdf.kernel.geom.Vector
 import com.itextpdf.kernel.pdf.EncryptionConstants
 import com.itextpdf.kernel.pdf.PdfDictionary
 import com.itextpdf.kernel.pdf.PdfDocument
@@ -19,6 +21,11 @@ import com.itextpdf.kernel.pdf.PdfWriter
 import com.itextpdf.kernel.pdf.ReaderProperties
 import com.itextpdf.kernel.pdf.WriterProperties
 import com.itextpdf.kernel.pdf.canvas.PdfCanvas
+import com.itextpdf.kernel.pdf.canvas.parser.PdfCanvasProcessor
+import com.itextpdf.kernel.pdf.canvas.parser.EventType
+import com.itextpdf.kernel.pdf.canvas.parser.data.IEventData
+import com.itextpdf.kernel.pdf.canvas.parser.data.TextRenderInfo
+import com.itextpdf.kernel.pdf.canvas.parser.listener.IEventListener
 import com.itextpdf.kernel.pdf.extgstate.PdfExtGState
 import com.itextpdf.kernel.utils.PdfMerger
 import com.itextpdf.layout.Document
@@ -28,6 +35,7 @@ import com.offlinepdf.toolkit.core.domain.model.CompressionLevel
 import com.offlinepdf.toolkit.core.domain.model.PasswordConfig
 import com.offlinepdf.toolkit.core.domain.model.RotationDegree
 import com.offlinepdf.toolkit.core.domain.model.SplitMode
+import com.offlinepdf.toolkit.core.domain.model.TextRegion
 import com.offlinepdf.toolkit.core.domain.model.WatermarkConfig
 import com.offlinepdf.toolkit.core.domain.model.WatermarkPosition
 import java.io.ByteArrayInputStream
@@ -517,6 +525,104 @@ class ITextPdfProcessor @Inject constructor() {
             } finally {
                 outputDoc.close()
             }
+        }
+    }
+
+    // ── Extract Text With Font ────────────────────────────────────────────────
+
+    fun extractTextWithFont(input: ByteArray, password: String?): List<TextRegion> {
+        val reader = openReader(input, password)
+        val regions = mutableListOf<TextRegion>()
+        PdfDocument(reader).use { pdfDoc ->
+            val totalPages = pdfDoc.numberOfPages
+            for (pageNum in 1..totalPages) {
+                val extractor = PageTextExtractor(pageNum - 1)
+                val processor = PdfCanvasProcessor(extractor)
+                processor.processPageContent(pdfDoc.getPage(pageNum))
+                regions.addAll(extractor.regions)
+            }
+        }
+        return regions
+    }
+
+    private class PageTextExtractor(private val pageIndex: Int) : IEventListener {
+        val regions = mutableListOf<TextRegion>()
+
+        override fun eventOccurred(data: IEventData, type: EventType) {
+            if (type != EventType.RENDER_TEXT) return
+            val info = data as TextRenderInfo
+            val text = info.text?.trim() ?: return
+            if (text.isBlank()) return
+
+            val baseline = info.baseline ?: return
+            val ascent = info.ascentLine ?: return
+            val descent = info.descentLine ?: return
+
+            val x1 = baseline.startPoint.get(Vector.I1)
+            val x2 = baseline.endPoint.get(Vector.I1)
+            val yBottom = descent.startPoint.get(Vector.I2)
+            val yTop = ascent.startPoint.get(Vector.I2)
+
+            val left = minOf(x1, x2)
+            val right = maxOf(x1, x2)
+            if (right - left < 0.5f || yTop - yBottom < 0.5f) return
+
+            val font = info.font
+            val rawName = font?.fontProgram?.fontNames?.fontName ?: "Helvetica"
+            // Strip subset prefix like "ABCDEF+"
+            val cleanName = rawName.substringAfter("+").substringBefore(",").trim().ifBlank { rawName }
+            val isBold = cleanName.contains("Bold", ignoreCase = true)
+            val isItalic = cleanName.contains("Italic", ignoreCase = true) ||
+                cleanName.contains("Oblique", ignoreCase = true)
+            val baseName = cleanName
+                .replace(Regex("(?i)-?(Bold|Italic|Oblique|MT|PS)"), "")
+                .trim('-').trim()
+                .ifBlank { "Helvetica" }
+
+            regions.add(
+                TextRegion(
+                    pageIndex = pageIndex,
+                    text = text,
+                    bounds = RectF(left, yBottom, right, yTop),  // PDF coords (y increases upward)
+                    fontName = baseName,
+                    fontSize = info.fontSize.coerceAtLeast(1f),
+                    isBold = isBold,
+                    isItalic = isItalic
+                )
+            )
+        }
+
+        override fun getSupportedEvents(): Set<EventType> = setOf(EventType.RENDER_TEXT)
+    }
+
+    // ── Save Edited PDF ───────────────────────────────────────────────────────
+
+    fun saveEditedPdf(
+        input: ByteArray,
+        password: String?,
+        overlays: List<Pair<Int, ByteArray>>,   // (0-based pageIndex, PNG bytes)
+        outputStream: OutputStream,
+        onProgress: (Int, Int) -> Unit
+    ) {
+        val reader = openReader(input, password)
+        val writer = PdfWriter(outputStream)
+        val pdfDoc = PdfDocument(reader, writer)
+        try {
+            val overlayMap = overlays.toMap()
+            val total = pdfDoc.numberOfPages
+            for (pageNum in 1..total) {
+                overlayMap[pageNum - 1]?.let { pngBytes ->
+                    val page = pdfDoc.getPage(pageNum)
+                    val pageSize = page.pageSize
+                    val canvas = PdfCanvas(page)
+                    val imageData = ImageDataFactory.create(pngBytes)
+                    canvas.addImageFittedIntoRectangle(imageData, pageSize, false)
+                    canvas.release()
+                }
+                onProgress(pageNum, total)
+            }
+        } finally {
+            pdfDoc.close()
         }
     }
 

@@ -1,12 +1,14 @@
 package com.offlinepdf.toolkit.core.data.repository
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import com.offlinepdf.toolkit.core.data.processor.AndroidPdfRenderer
 import com.offlinepdf.toolkit.core.data.processor.ITextPdfProcessor
 import com.offlinepdf.toolkit.core.data.processor.PdfProcessingException
 import com.offlinepdf.toolkit.core.domain.error.PdfError
 import com.offlinepdf.toolkit.core.domain.model.CompressionLevel
+import com.offlinepdf.toolkit.core.domain.model.PageEdit
 import com.offlinepdf.toolkit.core.domain.model.PasswordConfig
 import com.offlinepdf.toolkit.core.domain.model.PdfDocument
 import com.offlinepdf.toolkit.core.domain.model.PdfOperationResult
@@ -14,6 +16,7 @@ import com.offlinepdf.toolkit.core.domain.model.PdfPage
 import com.offlinepdf.toolkit.core.domain.model.ProcessingProgress
 import com.offlinepdf.toolkit.core.domain.model.RotationDegree
 import com.offlinepdf.toolkit.core.domain.model.SplitMode
+import com.offlinepdf.toolkit.core.domain.model.TextRegion
 import com.offlinepdf.toolkit.core.domain.model.WatermarkConfig
 import com.offlinepdf.toolkit.core.domain.repository.FileRepository
 import com.offlinepdf.toolkit.core.domain.repository.PdfRepository
@@ -22,6 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.withContext
+import java.io.ByteArrayOutputStream
 import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -70,6 +75,40 @@ class PdfRepositoryImpl @Inject constructor(
         } else {
             emit(PdfOperationResult.Failure(PdfError.RenderFailure(pageNumber, result.exceptionOrNull()?.message ?: "Unknown")))
         }
+    }.flowOn(Dispatchers.IO)
+
+    override suspend fun renderPageBitmap(uri: Uri, pageNumber: Int, dpi: Int): Result<Bitmap> =
+        withContext(Dispatchers.IO) { renderer.renderPage(uri, pageNumber, dpi) }
+
+    override suspend fun extractTextWithFont(uri: Uri, password: String?): Result<List<TextRegion>> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val bytes = fileRepository.openInputStream(uri).getOrThrow().use { it.readBytes() }
+                processor.extractTextWithFont(bytes, password)
+            }.mapFailure(uri.toString())
+        }
+
+    override fun saveEditedPdf(
+        inputUri: Uri,
+        outputUri: Uri,
+        pageEdits: List<PageEdit>,
+        password: String?
+    ): Flow<ProcessingProgress> = flow {
+        emit(ProcessingProgress(0, 1, ProcessingProgress.Phase.READING))
+        val bytes = fileRepository.openInputStream(inputUri).getOrThrow().use { it.readBytes() }
+
+        val overlays = pageEdits.mapNotNull { edit ->
+            val bmp = edit.overlayBitmap ?: return@mapNotNull null
+            val pngBytes = ByteArrayOutputStream().also { baos ->
+                bmp.compress(Bitmap.CompressFormat.PNG, 100, baos)
+            }.toByteArray()
+            edit.pageIndex to pngBytes
+        }
+
+        emit(ProcessingProgress(0, 1, ProcessingProgress.Phase.PROCESSING))
+        val os = fileRepository.openOutputStream(outputUri).getOrThrow()
+        os.use { processor.saveEditedPdf(bytes, password, overlays, it) { _, _ -> } }
+        emit(ProcessingProgress(1, 1, ProcessingProgress.Phase.DONE))
     }.flowOn(Dispatchers.IO)
 
     override fun mergePdfs(inputUris: List<Uri>, outputUri: Uri): Flow<ProcessingProgress> = flow {

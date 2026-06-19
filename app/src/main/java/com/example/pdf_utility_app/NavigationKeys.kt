@@ -16,3 +16,4 @@ import kotlinx.serialization.Serializable
 @Serializable data object UnlockPdf : NavKey
 @Serializable data object ExtractText : NavKey
 @Serializable data object ImagesToPdf : NavKey
+@Serializable data object EditPdf : NavKey

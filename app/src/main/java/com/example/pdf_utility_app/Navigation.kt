@@ -16,6 +16,7 @@ import com.example.pdf_utility_app.ui.password.PasswordProtectScreen
 import com.example.pdf_utility_app.ui.reorder.ReorderPagesScreen
 import com.example.pdf_utility_app.ui.rotate.RotatePagesScreen
 import com.example.pdf_utility_app.ui.split.SplitPdfScreen
+import com.example.pdf_utility_app.ui.edit.EditPdfScreen
 import com.example.pdf_utility_app.ui.text.ExtractTextScreen
 import com.example.pdf_utility_app.ui.unlock.UnlockPdfScreen
 import com.example.pdf_utility_app.ui.watermark.AddWatermarkScreen
@@ -67,6 +68,9 @@ fun MainNavigation() {
             }
             entry<ImagesToPdf> {
                 ImagesToPdfScreen(onBack = { backStack.removeLastOrNull() }, modifier = baseModifier)
+            }
+            entry<EditPdf> {
+                EditPdfScreen(onBack = { backStack.removeLastOrNull() }, modifier = baseModifier)
             }
         }
     )

@@ -32,6 +32,7 @@ import com.example.pdf_utility_app.PasswordProtect
 import com.example.pdf_utility_app.ReorderPages
 import com.example.pdf_utility_app.RotatePages
 import com.example.pdf_utility_app.SplitPdf
+import com.example.pdf_utility_app.EditPdf
 import com.example.pdf_utility_app.UnlockPdf
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.pdf_utility_app.theme.PdfUtilityAppTheme
@@ -57,6 +58,7 @@ private val operations = listOf(
     Operation("Unlock PDF", "Remove password", "🔓", UnlockPdf),
     Operation("Extract Text", "Get plain text", "📝", ExtractText),
     Operation("Images to PDF", "Convert images", "🖼️", ImagesToPdf),
+    Operation("Edit PDF", "Redact & replace text", "✏️", EditPdf),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

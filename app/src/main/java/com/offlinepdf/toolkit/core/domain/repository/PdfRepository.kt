@@ -1,7 +1,9 @@
 package com.offlinepdf.toolkit.core.domain.repository
 
+import android.graphics.Bitmap
 import android.net.Uri
 import com.offlinepdf.toolkit.core.domain.model.CompressionLevel
+import com.offlinepdf.toolkit.core.domain.model.PageEdit
 import com.offlinepdf.toolkit.core.domain.model.PasswordConfig
 import com.offlinepdf.toolkit.core.domain.model.PdfDocument
 import com.offlinepdf.toolkit.core.domain.model.PdfOperationResult
@@ -9,6 +11,7 @@ import com.offlinepdf.toolkit.core.domain.model.PdfPage
 import com.offlinepdf.toolkit.core.domain.model.ProcessingProgress
 import com.offlinepdf.toolkit.core.domain.model.RotationDegree
 import com.offlinepdf.toolkit.core.domain.model.SplitMode
+import com.offlinepdf.toolkit.core.domain.model.TextRegion
 import com.offlinepdf.toolkit.core.domain.model.WatermarkConfig
 import kotlinx.coroutines.flow.Flow
 
@@ -16,6 +19,9 @@ interface PdfRepository {
     suspend fun getDocumentInfo(uri: Uri, password: String? = null): Result<PdfDocument>
     suspend fun getPageList(uri: Uri, password: String? = null): Result<List<PdfPage>>
     fun renderPage(uri: Uri, pageNumber: Int, dpi: Int = 150, password: String? = null): Flow<PdfOperationResult>
+    suspend fun renderPageBitmap(uri: Uri, pageNumber: Int, dpi: Int = 150): Result<Bitmap>
+    suspend fun extractTextWithFont(uri: Uri, password: String? = null): Result<List<TextRegion>>
+    fun saveEditedPdf(inputUri: Uri, outputUri: Uri, pageEdits: List<PageEdit>, password: String? = null): Flow<ProcessingProgress>
     fun mergePdfs(inputUris: List<Uri>, outputUri: Uri): Flow<ProcessingProgress>
     fun splitPdf(inputUri: Uri, mode: SplitMode, outputDir: Uri, password: String? = null): Flow<ProcessingProgress>
     fun compressPdf(inputUri: Uri, outputUri: Uri, level: CompressionLevel, password: String? = null): Flow<ProcessingProgress>
