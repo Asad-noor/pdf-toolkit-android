@@ -4,13 +4,15 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.google.services)
+    alias(libs.plugins.firebase.crashlytics)
 }
 
 android {
-    namespace = "com.example.pdf_utility_app"
+    namespace = "com.worldvisionsoft.pdftoolkit"
     compileSdk = 36
     defaultConfig {
-        applicationId = "com.example.pdf_utility_app"
+        applicationId = "com.worldvisionsoft.pdftoolkit"
         minSdk = 26
         targetSdk = 36
         versionCode = 1
@@ -118,4 +120,9 @@ dependencies {
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.androidx.test.runner)
     androidTestImplementation(libs.androidx.test.espresso.core)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.crashlytics)
 }

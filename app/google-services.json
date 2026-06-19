@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "105527580922",
+    "project_id": "pdf-toolkit---pedi",
+    "storage_bucket": "pdf-toolkit---pedi.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:105527580922:android:3b701ce4b20af8607e1143",
+        "android_client_info": {
+          "package_name": "com.worldvisionsoft.pdftoolkit"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDvCHoSzsxQ5eW4oWr1Uj-8YnW0jVIONCs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
