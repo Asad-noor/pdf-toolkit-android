@@ -13,8 +13,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 sealed class ImagesToPdfUiState {
-    object Idle : ImagesToPdfUiState()
-    data class ImagesReady(val uris: List<Uri>) : ImagesToPdfUiState()
+    data class Editing(val images: List<Uri> = emptyList()) : ImagesToPdfUiState()
     data class Processing(val progress: ProcessingProgress) : ImagesToPdfUiState()
     data class Success(val outputUri: Uri) : ImagesToPdfUiState()
     data class Error(val message: String) : ImagesToPdfUiState()
@@ -25,20 +24,29 @@ class ImagesToPdfViewModel @Inject constructor(
     private val imagesToPdfUseCase: ImagesToPdfUseCase
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<ImagesToPdfUiState>(ImagesToPdfUiState.Idle)
+    private val _uiState = MutableStateFlow<ImagesToPdfUiState>(ImagesToPdfUiState.Editing())
     val uiState = _uiState.asStateFlow()
 
+    private val images = mutableListOf<Uri>()
     private var operationJob: Job? = null
 
-    fun onImagesSelected(uris: List<Uri>) {
-        _uiState.value = ImagesToPdfUiState.ImagesReady(uris)
+    fun addImages(uris: List<Uri>) {
+        images.addAll(uris)
+        _uiState.value = ImagesToPdfUiState.Editing(images.toList())
     }
 
-    fun convert(imageUris: List<Uri>, outputUri: Uri) {
+    fun removeImage(uri: Uri) {
+        images.remove(uri)
+        _uiState.value = ImagesToPdfUiState.Editing(images.toList())
+    }
+
+    fun convert(outputUri: Uri) {
+        val toConvert = images.toList()
+        if (toConvert.isEmpty()) return
         operationJob?.cancel()
         operationJob = viewModelScope.launch {
             try {
-                imagesToPdfUseCase(ImagesToPdfUseCase.Params(imageUris, outputUri))
+                imagesToPdfUseCase(ImagesToPdfUseCase.Params(toConvert, outputUri))
                     .collect { progress ->
                         _uiState.value = ImagesToPdfUiState.Processing(progress)
                         if (progress.phase == ProcessingProgress.Phase.DONE) {
@@ -53,10 +61,11 @@ class ImagesToPdfViewModel @Inject constructor(
 
     fun cancel() {
         operationJob?.cancel()
-        _uiState.value = ImagesToPdfUiState.Idle
+        _uiState.value = ImagesToPdfUiState.Editing(images.toList())
     }
 
     fun reset() {
-        _uiState.value = ImagesToPdfUiState.Idle
+        images.clear()
+        _uiState.value = ImagesToPdfUiState.Editing()
     }
 }

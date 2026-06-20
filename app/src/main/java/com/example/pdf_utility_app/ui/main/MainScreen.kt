@@ -1,9 +1,7 @@
 package com.example.pdf_utility_app.ui.main
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,14 +10,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation3.runtime.NavKey
 import com.example.pdf_utility_app.AddWatermark
 import com.example.pdf_utility_app.CompressPdf
@@ -46,6 +42,7 @@ private data class Operation(
 
 private val operations = listOf(
     Operation("Edit PDF", "Redact & replace text", "✏️", EditPdf),
+    Operation("Scan / Images to PDF", "Camera scan or gallery", "📷", ImagesToPdf),
     Operation("Merge PDFs", "Combine multiple PDFs", "📚", MergePdfs),
     Operation("Extract Pages", "Pull out pages", "📑", ExtractPages),
     Operation("Delete Pages", "Remove pages", "🗑️", DeletePages),
@@ -56,7 +53,6 @@ private val operations = listOf(
     Operation("Password Protect", "Encrypt PDF", "🔐", PasswordProtect),
     Operation("Unlock PDF", "Remove password", "🔓", UnlockPdf),
     Operation("Extract Text", "Get plain text", "📝", ExtractText),
-    Operation("Images to PDF", "Convert images", "🖼️", ImagesToPdf),
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

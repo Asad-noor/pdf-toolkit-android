@@ -22,6 +22,7 @@ bouncyCastle = "1.78.1"
 mockk = "1.13.11"
 kotlinxSerializationJson = "1.7.1"
 firebaseBom = "34.15.0"
+camerax = "1.4.1"
 googleServices = "4.5.0"
 firebaseCrashlyticsPlugin = "3.0.7"
 
@@ -66,6 +67,11 @@ bouncycastle = { module = "org.bouncycastle:bcprov-jdk15to18", version.ref = "bo
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 # MockK
 mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+# CameraX
+androidx-camera-core = { group = "androidx.camera", name = "camera-core", version.ref = "camerax" }
+androidx-camera-camera2 = { group = "androidx.camera", name = "camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "camerax" }
+androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "camerax" }
 # Firebase
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics" }
