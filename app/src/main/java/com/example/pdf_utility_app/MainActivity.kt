@@ -42,6 +42,11 @@ class MainActivity : ComponentActivity() {
 
     private val updateCheckViewModel: UpdateCheckViewModel by viewModels()
 
+    override fun onResume() {
+        super.onResume()
+        updateCheckViewModel.recheckUpdate()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -99,7 +104,6 @@ class MainActivity : ComponentActivity() {
                                         TextButton(
                                             onClick = {
                                                 openPlayStore()
-                                                updateCheckViewModel.dismissUpdate()
                                             },
                                             colors = ButtonDefaults.textButtonColors(
                                                 contentColor = MaterialTheme.colorScheme.primary

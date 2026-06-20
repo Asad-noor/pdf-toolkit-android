@@ -19,8 +19,20 @@ class UpdateCheckViewModel @Inject constructor(
     private val _updateInfo = MutableStateFlow<UpdateInfo?>(null)
     val updateInfo: StateFlow<UpdateInfo?> = _updateInfo
 
+    // Tracks whether the user explicitly tapped "Not Now" — resets on process death (intentional)
+    private var userDismissed = false
+
     init {
         checkForUpdate()
+    }
+
+    fun recheckUpdate() {
+        if (!userDismissed) checkForUpdate()
+    }
+
+    fun dismissUpdate() {
+        userDismissed = true
+        _updateInfo.value = null
     }
 
     private fun checkForUpdate() {
@@ -30,9 +42,5 @@ class UpdateCheckViewModel @Inject constructor(
                 _updateInfo.value = info
             }
         }
-    }
-
-    fun dismissUpdate() {
-        _updateInfo.value = null
     }
 }

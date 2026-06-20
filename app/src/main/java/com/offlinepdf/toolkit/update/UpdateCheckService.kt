@@ -23,8 +23,13 @@ class UpdateCheckService @Inject constructor() {
             remoteConfig.setDefaultsAsync(
                 mapOf("version_name" to "1.0.0", "force_update" to true)
             ).await()
-            remoteConfig.fetchAndActivate().await()
-            val version = remoteConfig.getString("version_name").takeIf { it.isNotBlank() } ?: return null
+            try {
+                remoteConfig.fetchAndActivate().await()
+            } catch (_: Exception) {
+                // fetch failed — fall through and read whatever cached/default values are available
+            }
+            val version = remoteConfig.getString("version_name").takeIf { it.isNotBlank() }
+                ?: return null
             val forceUpdate = remoteConfig.getBoolean("force_update")
             UpdateInfo(version, forceUpdate)
         } catch (e: Exception) {
