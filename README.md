@@ -25,6 +25,34 @@ A fully offline, production-ready Android PDF utility app built with Jetpack Com
 
 ---
 
+## Screenshots
+
+<table>
+  <tr>
+    <td align="center"><b>Main Screen</b><br/><img src="screenshots/01_main.png" width="200"/></td>
+    <td align="center"><b>Edit PDF</b><br/><img src="screenshots/02_edit_pdf.png" width="200"/></td>
+    <td align="center"><b>Scan / Images to PDF</b><br/><img src="screenshots/03_images_to_pdf.png" width="200"/></td>
+    <td align="center"><b>Merge PDFs</b><br/><img src="screenshots/04_merge.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Extract Pages</b><br/><img src="screenshots/05_extract_pages.png" width="200"/></td>
+    <td align="center"><b>Delete Pages</b><br/><img src="screenshots/06_delete_pages.png" width="200"/></td>
+    <td align="center"><b>Reorder Pages</b><br/><img src="screenshots/07_reorder_pages.png" width="200"/></td>
+    <td align="center"><b>Rotate Pages</b><br/><img src="screenshots/08_rotate_pages.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Compress PDF</b><br/><img src="screenshots/09_compress.png" width="200"/></td>
+    <td align="center"><b>Add Watermark</b><br/><img src="screenshots/10_watermark.png" width="200"/></td>
+    <td align="center"><b>Password Protect</b><br/><img src="screenshots/11_password.png" width="200"/></td>
+    <td align="center"><b>Unlock PDF</b><br/><img src="screenshots/12_unlock.png" width="200"/></td>
+  </tr>
+  <tr>
+    <td align="center"><b>Extract Text</b><br/><img src="screenshots/13_extract_text.png" width="200"/></td>
+  </tr>
+</table>
+
+---
+
 ## Architecture
 
 ```
