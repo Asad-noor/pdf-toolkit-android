@@ -47,5 +47,8 @@ Thumbs.db
 # Proguard
 proguard/
 
+# Firebase — get this from the Firebase Console, don't commit to public repos
+google-services.json
+
 # Claude Code (local tool config)
 .claude/settings.local.json
