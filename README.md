@@ -181,5 +181,5 @@ Three split strategies available at the domain layer:
 ---
 
 ## License
-
-This project is for portfolio and demonstration purposes.
+Commercial use of this project code is not allowed
+This project is for my portfolio and demonstration purposes.
